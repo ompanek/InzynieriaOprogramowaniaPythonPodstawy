@@ -47,10 +47,30 @@ def index_documents(documents: list[str], queries: list[str]) -> list[list[int]]
     Returns:
         list[list[int]]: Lista wyników dla kolejnych zapytań.
     """
-    ### TUTAJ PODAJ ROZWIĄZANIE ZADANIA
+    translator = str.maketrans('', '', string.punctuation)
 
-    ### return [[]] - powinno być zmienione i zwrócić prawdziwy wynik (zgodny z oczekiwaniami)
-    return [[]]
+    doc_word_counts = []
+    for doc in documents:
+        cleaned_doc = doc.translate(translator).lower()
+        words = cleaned_doc.split()
+        word_count = Counter(words)
+        doc_word_counts.append(word_count)
+
+    results = []
+    for query in queries:
+        query_lower = query.lower()
+        doc_freq = []
+        for idx, word_count in enumerate(doc_word_counts):
+            count = word_count.get(query_lower, 0)
+            if count > 0:
+                doc_freq.append((count, idx))
+        # Sortowanie: najpierw według liczby wystąpień (malejąco), potem numeru dokumentu (malejąco)
+        doc_freq.sort(key=lambda x: (-x[0], -x[1]))
+        # Wyciąganie numerów dokumentów
+        result = [idx for count, idx in doc_freq]
+        results.append(result)
+
+    return results
 
 
 # Przykładowe wywołanie:
